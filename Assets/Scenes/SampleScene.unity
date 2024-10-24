@@ -9085,6 +9085,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   markerPrefab: {fileID: 789684486510353890, guid: 9186d117df741a14bb2b9880dac40a9e, type: 3}
   visualIndicatorPrefab: {fileID: 789684486510353890, guid: 9186d117df741a14bb2b9880dac40a9e, type: 3}
+  spatialAnchorFile: {fileID: 4900000, guid: edf08ddf4f8bd1047bb6d2ab331a10f4, type: 3}
 --- !u!4 &1681554399
 Transform:
   m_ObjectHideFlags: 0
@@ -9709,7 +9710,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buttonClickActions:
-  - Title: Button Interaction Test
+  - Title: Spatial Anchor Creation
     Button: 2105344
     ButtonMode: 1
     Callback:

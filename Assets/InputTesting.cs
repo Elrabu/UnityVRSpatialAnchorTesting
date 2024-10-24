@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using System;
 
 public class InputTesting : MonoBehaviour
 {
@@ -9,9 +11,15 @@ public class InputTesting : MonoBehaviour
     public GameObject visualIndicatorPrefab;
 
     private GameObject floatingIndicator;
+
+    private string myfilePath, fileName;
+
+    string [] myArray;
     
     void Start()
     {
+        fileName = "spatialAnchors.txt";
+        myfilePath = Application.dataPath + "/" + fileName;
         
         Vector3 controllerPosition = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch); //create controller Position and Rotation
         Quaternion controllerRotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch);
@@ -31,47 +39,48 @@ public class InputTesting : MonoBehaviour
         floatingIndicator.transform.rotation = controllerRotation;
     }
 
-    public void CreateTestMessage()
-    {
-        print("This is a test message");
-    }
-
     public void CreateSpatialAnchorMethod()
     {
          StartCoroutine(CreateSpatialAnchor());
     }
 
     IEnumerator CreateSpatialAnchor()
-{
-    // Get the position and rotation of the right-hand controller (in world space)
-    Vector3 controllerPosition = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch); // Right controller
-    Quaternion controllerRotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch);
-    
-    var go = new GameObject(); // New GameObject
-    go.transform.position = controllerPosition;
-    go.transform.rotation = controllerRotation;
-
-    
-    var anchor = go.AddComponent<OVRSpatialAnchor>(); //initialize the spatial anchor
-
-    // Wait for the async creation of the anchor
-    yield return new WaitUntil(() => anchor.Created);
-
-    //check if prefab ist there (not null)
-    if (markerPrefab != null)
     {
+        // Get the position and rotation of the right-hand controller (in world space)
+        Vector3 controllerPosition = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch); // Right controller
+        Quaternion controllerRotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch);
+    
+        var go = new GameObject(); // New GameObject
+        go.transform.position = controllerPosition;
+        go.transform.rotation = controllerRotation;
+
+    
+        var anchor = go.AddComponent<OVRSpatialAnchor>(); //initialize the spatial anchor
+
+        // Wait for the async creation of the anchor
+        yield return new WaitUntil(() => anchor.Created);
+
+        //check if prefab is there (not null)
+        if (markerPrefab != null)
+        {
         
-        GameObject marker = Instantiate(markerPrefab, anchor.transform.position, anchor.transform.rotation);
+            GameObject marker = Instantiate(markerPrefab, anchor.transform.position, anchor.transform.rotation);
 
-        marker.transform.localScale = new Vector3(1, 1, 1);
+            marker.transform.localScale = new Vector3(1, 1, 1);
 
-        marker.transform.SetParent(anchor.transform, false);
+            marker.transform.SetParent(anchor.transform, false);
 
-        // Reset local position and rotation to avoid offset issues
-        marker.transform.localPosition = Vector3.zero; //reset local position, 
-        marker.transform.localRotation = Quaternion.identity;
+            // Reset local position and rotation to avoid offset issues
+            marker.transform.localPosition = Vector3.zero; //reset local position, 
+            marker.transform.localRotation = Quaternion.identity;
+        }
 
+        SaveSpatialAnchor(anchor.Uuid.ToString()); //get the anchor UUID
+        print($"Spatial Anchor with UUID {anchor.Uuid} saved");
     }
-}
-
+    
+    public void SaveSpatialAnchor(string uuid)
+    {
+        File.AppendAllText(myfilePath, uuid + Environment.NewLine);
+    }
 }
